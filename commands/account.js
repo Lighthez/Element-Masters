@@ -13,9 +13,8 @@ module.exports = {
           execute: async function(context) {
                if(await context.accounts.accountExists(context.msg.author.id) == false) {
                     //account creation dialog goes here
-                    context.msg.channel.send("Nomally, we'd have a nice introduction to the game right about here, but we don't have anything close to a finished product here do we?");
                     await context.accounts.createAccount(context.msg.author.id);
-                    context.msg.channel.send("Account registered successfully!");
+                    context.msg.channel.send("Thank you for testing Element Masters!");
                } else {
                     context.msg.channel.send("You already have an account!");
                }
@@ -23,11 +22,19 @@ module.exports = {
           }
      },
 
-     opMenu: {
+     op: {
           op:true,
           description:"op stuff, you would know.",
-          execute: async function() {
+          execute: async function(context) {
+               switch (context.arguments[1]) {
+                    case "delete":
+                         await context.accounts.deleteAccount(context.arguments[2]);
+                         context.msg.channel.send("gone.");
+                         break;
                
+                    default:
+                         break;
+               }
           }
      }
 }

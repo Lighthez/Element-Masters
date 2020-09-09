@@ -1,0 +1,27 @@
+{
+    "baseCharacter":{
+        "stats":{
+            "health":100,
+            "actionPoints":10,
+            "actionRegen":3.5,
+            "magic":10,
+            "magicRegen":2,
+            "attack":10,
+            "defence":5,
+            "evade":0.2,
+            "luck":10
+        },
+        "skills":[
+            "example"
+        ]
+    },
+    "characterSkills":{
+        "example":{
+            "usableBy": ["basic"],
+            "type":"basicAttack",
+            "damage":10,
+            "actionPointCost":2,
+            "magicCost":2
+        }
+    }
+}

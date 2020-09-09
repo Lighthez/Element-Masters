@@ -1,10 +1,17 @@
 const Discord = require('discord.js');
 const fs = require('fs');
 
-const accounts = require('./accounts.js');
-const parseArguments = require('./util/parseArguments.js');
+const game = loadContent();
+console.log(game);
 
-const config = JSON.parse(fs.readFileSync("./config/config.json", "utf8"));
+const util = {
+    parseArguments: require('./util/parseArguments.js'),
+    embeds: require('./util/embeds.js'),
+}
+
+const accounts = require('./database.js');
+const { dir } = require('console');
+const config = JSON.parse(fs.readFileSync("./config/config.json", "utf8")); 
 const token = fs.readFileSync("./config/token.txt", "utf8");
 
 const client = new Discord.Client();
@@ -28,12 +35,12 @@ client.on('message', msg => {
             fs.access(commandPath, async (err) => {
                 if(!err) {
                     let op = await accounts.isOp(msg.author.id);
-                    console.log(op);
+                    //console.log(op);
                     let commandObject = require(commandPath);
 
-                    let arguments = parseArguments(rawArguments);
-                    let context = {arguments, rawArguments, msg, accounts, config, op};
-                    console.log(arguments)
+                    let arguments = util.parseArguments(rawArguments);
+                    let context = {arguments, rawArguments, msg, util, config, accounts, game, op};
+                    //console.log(arguments)
 
                     if(arguments[0] == "" || (Object.keys(commandObject).length == 1 && Object.keys(commandObject)[0] == "default")){
                         executeCommand(msg,commandObject,"default",context,op);
@@ -49,35 +56,47 @@ client.on('message', msg => {
             });
         }
     } else {
-        errorMessage(msg, "Cannot connect to database, please try again later.");
+        utils.embeds.errorMessage(msg, "Cannot connect to database, please try again later.");
     }
   }
 });
 
+process.on('exit', function(code) {
+    
+});
+
 client.login(token);
 
-function errorMessage(msg, err) {
-    const embed = new Discord.MessageEmbed()
-        .setTitle('An internal error occurred!')
-        .setColor(0xff0000)
-        .setDescription(err)
-    msg.channel.send(embed);
+function loadContent() {
+    let game = {
+        elements: readDirContents(fs.readdirSync("./game/elements"),"./game/elements/"),
+        items: {
+            consumables: readDirContents(fs.readdirSync("./game/items/consumable"),"./game/items/consumable/"),
+            equipment: readDirContents(fs.readdirSync("./game/items/equipment"), "./game/items/equipment/")
+        },
+    }
+    return game;
 }
 
-function accessMessage(msg) {
-    const embed = new Discord.MessageEmbed()
-        .setTitle('Access denied.')
-        .setColor(0xffff00)
-        .setDescription('Your access level is insufficient for this operation')
-    msg.channel.send(embed);
+function readDirContents(dirContents,dirPath) {
+    let dir = {};
+    for (let i = 0; i < dirContents.length; i++) {
+        fs.readFile(dirPath+dirContents[i], "utf8", (err, data)=>{
+            if(err) throw err;
+            let name = dirContents[i].replace(".json","");
+            data = JSON.parse(data);
+            dir[name] = data;
+        })
+    }
+    return dir;
 }
 
 function executeCommand(msg,commandObject,argument,context,op) {
     if(commandObject[argument].op && op) {
-        try{commandObject[argument].execute(context);} catch (err) {errorMessage(msg, err);}
+        try{commandObject[argument].execute(context);} catch (err) {util.embeds.errorMessage(msg, err);}
     } else if(commandObject[argument].op == false) {
-        try{commandObject[argument].execute(context);} catch (err) {errorMessage(msg, err);}
+        try{commandObject[argument].execute(context);} catch (err) {util.embeds.errorMessage(msg, err);}
     } else {
-        accessMessage(msg);
+        util.embeds.accessMessage(msg);
     }
 }
