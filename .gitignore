@@ -1,5 +1,8 @@
 # Bot config
-config/*
+config/
+
+# Visual studio code
+.vscode/
 
 # Logs
 logs
