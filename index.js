@@ -1,7 +1,9 @@
 const Discord = require('discord.js');
 const fs = require('fs');
 
-const game = loadContent();
+let game = {};
+game = require("./game/game.js");
+game.content = loadContent();
 console.log(game);
 
 const util = {
@@ -9,7 +11,7 @@ const util = {
     embeds: require('./util/embeds.js'),
 }
 
-const accounts = require('./database.js');
+const database = require('./database.js');
 const { dir } = require('console');
 const config = JSON.parse(fs.readFileSync("./config/config.json", "utf8")); 
 const token = fs.readFileSync("./config/token.txt", "utf8");
@@ -20,9 +22,11 @@ client.on('ready', () => {
   console.log(`READY: Connected to discord as: ${client.user.tag}`);
 });
 
-client.on('message', msg => {
+client.on('message', async msg => {
   if (msg.author.bot != true) {
-    if(accounts.isConnected()){
+    if(database.isConnected()){
+        let entries = await database.battles.getBattles();
+        console.log(entries);
         if(msg.content.slice(0,config.prefix.length) == config.prefix) {
             let rawMsg = msg.content.slice(config.prefix.length);
             let command = rawMsg.split(" ")[0]
@@ -34,12 +38,12 @@ client.on('message', msg => {
 
             fs.access(commandPath, async (err) => {
                 if(!err) {
-                    let op = await accounts.isOp(msg.author.id);
+                    let op = await database.accounts.isOp(msg.author.id);
                     //console.log(op);
                     let commandObject = require(commandPath);
 
                     let arguments = util.parseArguments(rawArguments);
-                    let context = {arguments, rawArguments, msg, util, config, accounts, game, op};
+                    let context = {arguments, rawArguments, msg, util, config, database, game, op};
                     //console.log(arguments)
 
                     if(arguments[0] == "" || (Object.keys(commandObject).length == 1 && Object.keys(commandObject)[0] == "default")){

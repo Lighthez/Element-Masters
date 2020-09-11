@@ -7,7 +7,7 @@ module.exports = {
             console.log(context.rawArguments)
             output = eval(context.rawArguments);
             console.log(typeof(output));
-            context.msg.channel.send(output);
+            context.msg.channel.send("```javascript\n"+output+"\n```");
         }
     }
 }

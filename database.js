@@ -13,11 +13,25 @@ client.connect().then(()=>{
     throw err;
 });
 
-const accounts = {
+const database = {
     isConnected: function () {
         return client.isConnected();
     },
+}
 
+const battles = {
+    createBattle: async function(type,channelId,players) {
+        await db.collection("battles").insertOne({"type":type,"channelId":channelId,"players":players});
+        return true
+    },
+
+    getBattles: async function() {
+        const query = await db.collection("battles").find({});
+        return query;
+    }
+}
+
+const accounts = {
     isOp: async function(id) {
         const query = await db.collection("operators").findOne({"discordId":id});
         if(query != null) {return true} else {return false}
@@ -64,8 +78,9 @@ const accounts = {
     }
 }
 
-module.exports = accounts;
-
+module.exports = database;
+module.exports.accounts = accounts;
+module.exports.battles = battles;
 
 
 
