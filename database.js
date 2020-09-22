@@ -7,7 +7,7 @@ const client = new MongoClient(config.dbUrl, {useUnifiedTopology: true});
 let db;
 
 client.connect().then(()=>{
-    console.log("READY: connected to db");
+    console.log("READY: Connected to db");
     db = client.db(config.dbName);
 },(err) => {
     throw err;
@@ -25,8 +25,8 @@ const battles = {
         return true
     },
 
-    getBattles: async function() {
-        const query = await db.collection("battles").find({});
+    getBattles: async function(filter) {
+        const query = await db.collection("battles").find({filter});
         return query;
     }
 }
@@ -37,13 +37,12 @@ const accounts = {
         if(query != null) {return true} else {return false}
     },
 
-    accountExists: async function(id) {
-        const query = await db.collection("users").findOne({"discordId":id});
-        if(query != null) {return true} else {return false}
-    },
-
     createAccount: async function (id,op,character,items) {
-        let account = {"discordId":id}
+        let account = {
+            "discordId":id,
+            "character": config.defaultCharacter,
+            "items": {}
+        }
 
         if(op) {await db.collection("operators").insertOne(account)}
 
@@ -53,6 +52,11 @@ const accounts = {
         await db.collection("users").insertOne(account);
         
         return true;
+    },
+
+    getAccount: async function(id) {
+        const query = await db.collection("users").findOne({"discordId":id});
+        return query;
     },
 
     deleteAccount: async function(id) {

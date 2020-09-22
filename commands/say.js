@@ -4,7 +4,7 @@ module.exports = {
         description:"placeholder text",
         execute: function(context) {
             context.msg.delete();
-            let text = context.rawArguments.replace(/@+/g, "h");
+            let text = context.arguments.join(" ").replace(/@+/g, "(at)");
             if(text == "h") {
                 context.msg.channel.send("stop");
             } else {

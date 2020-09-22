@@ -3,7 +3,7 @@ module.exports = {
           op:false,
           description:"hi",
           execute: async function(context) {
-               context.msg.channel.send("something something placeholder");
+               context.msg.channel.send("try doing e>account register");
           }
      },
 
@@ -11,7 +11,7 @@ module.exports = {
           op:false,
           description:"register an account",
           execute: async function(context) {
-               if(await context.database.accounts.accountExists(context.msg.author.id) == false) {
+               if(await context.database.accounts.getAccount(context.msg.author.id) == null) {
                     //account creation dialog goes here
                     await context.database.accounts.createAccount(context.msg.author.id);
                     context.msg.channel.send("Thank you for testing Element Masters!");
