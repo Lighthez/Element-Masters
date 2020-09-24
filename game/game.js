@@ -48,6 +48,7 @@ module.exports.commands = {
         op:false,
         execute: function(msg, id, commands) {
             let opponentSide = getOpponentSide(battles[id].side);
+            let player = battles[id].opponents[battles[id].side][battles[id].player];
             let result = [];
 
             if(id == battles[id].gamestate.player) {
@@ -56,7 +57,7 @@ module.exports.commands = {
                     if(commands[1] != undefined) {
                         commands[1] = commands[1].match(/(?<=<@)\d+/);
                         if(commands[1]) {
-                            result = weaponAttack(battles[id].opponents[battles[id].side][battles[id].player], commands[1][0], ); //readable code, very yes
+                            result = weaponAttack(player, commands[1][0], ); //readable code, very yes
                         } else {
                             msg.channel.send("Please choose a valid target!");
                         }
@@ -64,11 +65,15 @@ module.exports.commands = {
                         msg.channel.send("Please choose a target!");
                     }
                 } else {
-                    result = weaponAttack(battles[id].opponents[battles[id].side][battles[id].player], battles[id].opponents[opponentSide][0]); //HELP ME
+                    result = weaponAttack(player, battles[id].opponents[opponentSide][0]); //HELP ME
                 }
             }
 
-            if(result != "miss!")
+            if(result != false) {
+                battles[id].opponents[battles[id].side]
+            } else {
+                msg.channel.send("```diff\n- Miss! -\n```")
+            }
         }
     }
 }
@@ -106,6 +111,7 @@ function weaponAttack(wep,target,player) {
     let newStats;
     switch (wep.type) {
         case "standard":
+            //account for armor, def
             newStats = inflictStats(wep.stats, target, player);
             if(determineHit(newStats)) {
                 return newStats;
@@ -137,7 +143,7 @@ function inflictStats(stats,target,player) {
         }
     }
 
-    return [player, target];
+    return [player, target, damage];
 }
 
 function determineHit(stats) {
