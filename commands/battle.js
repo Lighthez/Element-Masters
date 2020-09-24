@@ -21,7 +21,7 @@ module.exports = {
         execute: async function(context) {
             switch (context.arguments[1]) {
                 case "create":
-                    let players = [{},{}];
+                    let players = [[],[]];
                     let side = 0;
                     for (let i = 4; i < context.arguments.length; i++) {
                         if(context.arguments[i] == "vs"){
@@ -29,7 +29,9 @@ module.exports = {
                             continue;
                         }
                         let account = await context.database.accounts.getAccount(context.arguments[i]);
-                        players[side][context.arguments[i]] = account.character;
+                        let currentId = context.arguments[i];
+                        currentId.character = account.character
+                        players[side].push({currentId});
                     }
 
                     console.log(players);

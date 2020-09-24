@@ -1,0 +1,10 @@
+{
+    "tier":0,
+    "fullName":"Leather Helmet",
+    "description":"Peices of leather stiched together haphazardly",
+    "slot":2,
+    "stats":{
+        "armor":2,
+        "weight":1
+    }
+}

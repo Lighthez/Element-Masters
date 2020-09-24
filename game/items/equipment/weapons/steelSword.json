@@ -1,0 +1,12 @@
+{
+    "tier":1,
+    "fullName":"Steel Broadsword",
+    "description":"Standard issue.",
+    "type":"standard",
+    "stats":{
+        "weight":3,
+        "APcost":5,
+        "damage":20,
+        "accuracy":1
+    }
+}

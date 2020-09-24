@@ -1,7 +1,0 @@
-{
-    "type":"weapon",
-    "stats":{
-        "damage":15,
-        "evade":-0.5
-    }
-}

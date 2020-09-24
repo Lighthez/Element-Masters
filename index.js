@@ -3,7 +3,6 @@ const fs = require('fs');
 
 let game = {};
 game = require("./game/game.js");
-game.content = loadContent();
 
 const util = {
     parseCommand: require('./util/parseCommand.js'),
@@ -36,10 +35,9 @@ client.on('message', async msg => {
             }
         }
 
-        if(msg.content.slice(0,config.prefix.length) == config.prefix || !battleMode) {
+        if(msg.content.slice(0,config.prefix.length) == config.prefix && !battleMode) {
             messageHandler(msg);
         }
-        console.log(battles);
     } else {
         utils.embeds.errorMessage(msg, "Cannot connect to database, please try again later.");
     }
@@ -58,7 +56,7 @@ async function battleChannelHandler(msg,id) {
 
     if(game.commands[command[0]] != undefined) {
         if((game.commands[command[0]].op && op) || (game.commands[command[0]].op != true)) {
-            game.commands[command[0]].execute(msg,id);
+            game.commands[command[0]].execute(msg,id,command);
         } else {
             util.embeds.accessMessage(msg);
         }
@@ -90,29 +88,6 @@ async function messageHandler(msg) {
             }
         } 
     });
-}
-
-function loadContent() {
-    let game = {
-        elements: readDirContents(fs.readdirSync("./game/elements"),"./game/elements/"),
-        items: {
-            consumables: readDirContents(fs.readdirSync("./game/items/consumable"),"./game/items/consumable/"),
-            equipment: readDirContents(fs.readdirSync("./game/items/equipment"), "./game/items/equipment/")
-        },
-    }
-    console.log("READY: Loaded content")
-    return game;
-}
-
-function readDirContents(dirContents,dirPath) {
-    let dir = {};
-    for (let i = 0; i < dirContents.length; i++) {
-        let file = fs.readFileSync(dirPath+dirContents[i], "utf-8");
-        let name = dirContents[i].replace(".json","");
-        file = JSON.parse(file);
-        dir[name] = file;
-    }
-    return dir;
 }
 
 function executeCommand(msg,commandObject,argument,context,op) {

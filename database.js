@@ -41,10 +41,10 @@ const accounts = {
         let account = {
             "discordId":id,
             "character": config.defaultCharacter,
-            "items": {}
+            "items": config.defaultItems,
         }
 
-        if(op) {await db.collection("operators").insertOne(account)}
+        if(op) {await db.collection("operators").insertOne({"discordId":id})}
 
         if(character != undefined) {account.character = character}
         if(items != undefined) {account.inventory = items}

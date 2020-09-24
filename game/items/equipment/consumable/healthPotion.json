@@ -1,0 +1,8 @@
+{
+    "tier":0,
+    "target":"player",
+    "stats":{
+        "heal":15,
+        "APcost":2
+    }
+}
