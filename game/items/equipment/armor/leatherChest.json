@@ -2,9 +2,9 @@
     "tier":0,
     "fullName":"Leather Helmet",
     "description":"Peices of leather stiched together haphazardly",
-    "slot":1,
+    "slot":"chest",
     "stats":{
         "armor":2,
-        "weight":1
+        "evade":-0.1
     }
 }

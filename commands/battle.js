@@ -29,9 +29,7 @@ module.exports = {
                             continue;
                         }
                         let account = await context.database.accounts.getAccount(context.arguments[i]);
-                        let currentId = context.arguments[i];
-                        currentId.character = account.character
-                        players[side].push({currentId});
+                        players[side].push([context.arguments[i], account.character]);
                     }
 
                     console.log(players);
@@ -39,6 +37,7 @@ module.exports = {
                         context.util.embeds.errorMessage(context.msg, "Invalid playercount!");
                     } else {
                         //context.database.battles.createBattle(context.arguments[2], context.arguments[3], players);
+                        
                         context.game.createBattle(context.arguments[2], context.arguments[3], players);
                     }
                     break;

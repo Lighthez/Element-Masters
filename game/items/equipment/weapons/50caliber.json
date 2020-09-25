@@ -3,7 +3,6 @@
     "fullName":".50 caliber anti-materiel rifle",
     "description":"what",
     "type":"standard",
-    "weight":5,
     "stats":{
         "APcost":5,
         "damage":9999,

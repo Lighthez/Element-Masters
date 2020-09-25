@@ -3,7 +3,6 @@
     "fullName":"Steel Broadsword",
     "description":"Standard issue.",
     "type":"standard",
-    "weight":3,
     "stats":{
         "APcost":5,
         "damage":20,

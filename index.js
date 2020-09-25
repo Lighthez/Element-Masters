@@ -56,6 +56,7 @@ async function battleChannelHandler(msg,id) {
 
     if(game.commands[command[0]] != undefined) {
         if((game.commands[command[0]].op && op) || (game.commands[command[0]].op != true)) {
+            //try{game.commands[command[0]].execute(msg,id,command);} catch (err) {util.embeds.errorMessage(msg, err);}
             game.commands[command[0]].execute(msg,id,command);
         } else {
             util.embeds.accessMessage(msg);
