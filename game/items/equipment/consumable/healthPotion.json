@@ -1,5 +1,7 @@
 {
     "tier":0,
+    "itemName":"Health potion",
+    "description":"A vial of thick, red liquid.",
     "target":"player",
     "stats":{
         "heal":15,

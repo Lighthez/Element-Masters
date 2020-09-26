@@ -1,6 +1,6 @@
 {
     "tier":0,
-    "fullName":"Wooden Stick",
+    "itemName":"Wooden Stick",
     "description":"You found it lying on the ground.",
     "type":"standard",
     "stats": {

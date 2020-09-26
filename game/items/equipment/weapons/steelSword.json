@@ -1,6 +1,6 @@
 {
     "tier":1,
-    "fullName":"Steel Broadsword",
+    "itemName":"Steel Broadsword",
     "description":"Standard issue.",
     "type":"standard",
     "stats":{

@@ -39,6 +39,8 @@ module.exports = {
                         //context.database.battles.createBattle(context.arguments[2], context.arguments[3], players);
                         
                         context.game.createBattle(context.arguments[2], context.arguments[3], players);
+                        //context.msg.channel.send("Battle started! " + players[0].join(" and ") + " vs " + players[1].join(" and "));
+                        context.msg.channel.send("Battle started!");
                     }
                     break;
             
