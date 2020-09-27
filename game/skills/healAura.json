@@ -1,0 +1,11 @@
+{
+    "tier":0,
+    "itemName":"Heal aura",
+    "description":"Creates an aura that heals your team.",
+    "target":"friendlyTeam",
+    "stats":{
+        "APcost":5,
+        "MPcost":5,
+        "heal":15
+    }
+}

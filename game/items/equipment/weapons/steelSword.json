@@ -4,8 +4,13 @@
     "description":"Standard issue.",
     "type":"standard",
     "stats":{
-        "APcost":5,
-        "damage":20,
-        "accuracy":0.5
+        "active":{
+            "APcost":5,
+            "damage":20
+        },
+
+        "passive":{
+            "accuracy":0.2
+        }
     }
 }

@@ -15,15 +15,21 @@ module.exports = {
             throw Error("Battle already exists!");
         }
 
+        let appliedStatsArray;
+
         for (const side in opponents) {
             for (const opponent in opponents[side]) {
                 console.log(opponent, side);
                 for (const armor in opponents[side][opponent][1].equipment.armor) {
-                    opponents[side][opponent][1] = applyStats(opponents[side][opponent][1].equipment.armor[armor], opponents[side][opponent][1]);
+                    appliedStatsArray = inflictStats(opponents[side][opponent][1].equipment.armor[armor].stats, opponents[side][opponent][1]);
+                    opponents[side][opponent][1] = appliedStatsArray[0];
                 }
-                opponents[side][opponent][1] = applyStats(opponents[side][opponent][1].equipment.weapon, opponents[side][opponent][1]);
+                appliedStatsArray = inflictStats(opponents[side][opponent][1].equipment.weapon.stats, opponents[side][opponent][1]);
+                opponents[side][opponent][1] = appliedStatsArray[0];
             }
         }
+
+        
 
         battles[channel] = {
             "type":type,
@@ -70,46 +76,19 @@ module.exports.commands = {
             let result;
 
             if(msg.author.id == player[0]) {
-                /*
-                if(battles[id].opponents[opponentSide].length > 1) {
-                    //let opponent = chooseOpponent(battles[id].opponents[enemySide(battles[id].gamestate.side)], msg);
-                    if(commands[1] != (undefined || "")) {
-                        commands[1] = commands[1].match(/(?<=<@!)\d+/);
-                        //console.log(commands[1][0]);
-                        if(commands[1] != null) {
-                            for (const item in battles[id].opponents[opponentSide]) {
-                                if(battles[id].opponents[opponentSide][item][0] == commands[1][0]) {
-                                    target = battles[id].opponents[opponentSide][item]
-                                    result = weaponAttack(player[1], target[1]);
-                                    break;
-                                }
-                            }
-
-                            if(target == undefined) {
-                                msg.channel.send("Please choose a valid target!");
-                            }
-                        } else {
-                            msg.channel.send("Please choose a valid target!");
-                        }
-                    } else {
-                        msg.channel.send("Please choose a target!");
-                    }
-                } else {
-                    target = battles[id].opponents[opponentSide][0]
-                    result = weaponAttack(player[1], target[1]); 
-                }*/
-                let playersArray = selectTarget(id,player,commands,opponentSide);
+                let playersArray = selectTarget(id,player,commands[1],opponentSide);
                 result = weaponAttack(playersArray[0], playersArray[1]);
 
-                //console.log(result);
+                console.log(result);
 
                 if(typeof(result) == "object") {
-                    battles[id].opponents[battles[id].side][player[0]] == result[0];
-                    battles[id].opponents[opponentSide][target[0]] == result[1];
+                    battles[id].opponents[battles[id].side][playersArray[0]] == result[0];
+                    battles[id].opponents[opponentSide][playersArray[1]] == result[1];
                     if(result[1].stats.health <= 0) {
 msg.channel.send(`\`\`\`ini
 [Element Masters! ALPHA]
-> DOWN! (${result[2]} - ${result[1].stats.health} / ${result[1].stats.maxHealth})
+> ${result[2]} Damage!
+> DOWN!
 [ ${result[0].stats.actionPoints} / ${result[0].stats.maxActionPoints} ] AP [ ${result[0].stats.magic} / ${result[0].stats.maxMagic} ] MP
 [ ${result[0].stats.health} / ${result[0].stats.maxHealth} ] HP
 \`\`\``);
@@ -141,13 +120,24 @@ msg.channel.send(`\`\`\`ini
         execute: function(msg,id,commands) {
             let opponentSide = getOpponentSide(battles[id].side);
             let player = battles[id].opponents[battles[id].side][battles[id].playerId];
+            let target;
             let result;
 
             if(msg.author.id == battles[id].playerId) {
-                let playersArray = selectTarget(id,player,commands,opponentSide);
-                if(playersArray[0].skills[commands[2]] != undefined) {
-                    result = applyStats(playersArray[0].skills[commands[2]], playersArray[0]);
+                for (const skill in player.skills) {
+                    if(skill.itemName == commands[1]) {
+                        result = skillMagic(id,player,player.skills[skill],commands);
+                        target = result[1];
+                        result = result[0];
+                        break;
+                    }
                 }
+                
+                if(result == undefined) {
+                    msg.channel.send("Please choose a valid skill!");
+                }
+
+                attackReport(id,msg,result,player,target)
             }
 
             console.log(result);
@@ -191,13 +181,13 @@ function readDirContents(dirContents,dirPath) {
     return dir;
 }
 
-function selectTarget(id,player,commands,opponentSide) {
+function selectTarget(id,player,ping,opponentSide) {
     if(battles[id].opponents[opponentSide].length > 1) {
-        if(commands[1] != (undefined || "")) {
-            commands[1] = commands[1].match(/(?<=<@!)\d+/);
-            if(commands[1] != null) {
+        if(ping != (undefined || "")) {
+            ping = ping.match(/(?<=<@!)\d+/);
+            if(ping != null) {
                 for (const item in battles[id].opponents[opponentSide]) {
-                    if(battles[id].opponents[opponentSide][item][0] == commands[1][0]) {
+                    if(battles[id].opponents[opponentSide][item][0] == ping[0]) {
                         target = battles[id].opponents[opponentSide][item]
                         return [player[1], target[1]];
                     }
@@ -217,31 +207,97 @@ function selectTarget(id,player,commands,opponentSide) {
     }
 }
 
-function weaponAttack(player, target) {
-    if((player.stats.actionPoints - player.equipment.weapon.stats.APcost) < 0) {
-        return false;
+function attackReport(id,msg,result,player,target) {
+    /*
+    if(typeof(result) == "object") {
+        battles[id].opponents[battles[id].side][player[0]] == result[0];
+        battles[id].opponents[opponentSide][target[0]] == result[1];
+        if(result[1].stats.health <= 0) {
+msg.channel.send(`\`\`\`ini
+[Element Masters! ALPHA]
+> ${result[2]} Damage!
+> DOWN!
+[ ${result[0].stats.actionPoints} / ${result[0].stats.maxActionPoints} ] AP [ ${result[0].stats.magic} / ${result[0].stats.maxMagic} ] MP
+[ ${result[0].stats.health} / ${result[0].stats.maxHealth} ] HP
+\`\`\``);
+            if(checkForWipe(id,msg)) {return;}
+        } else {
+        msg.channel.send(`\`\`\`ini
+[Element Masters! ALPHA]
+> ${result[2]} Damage!
+> ${result[1].stats.health} / ${result[1].stats.maxHealth} Enemy HP
+[ ${result[0].stats.actionPoints} / ${result[0].stats.maxActionPoints} ] AP [ ${result[0].stats.magic} / ${result[0].stats.maxMagic} ] MP
+[ ${result[0].stats.health} / ${result[0].stats.maxHealth} ] HP
+\`\`\``);
+        }
+    } else if(result == "miss") {
+        msg.channel.send("```diff\n- Miss! -\n```");
+    } else if(result == false) {
+        msg.channel.send("Not enough ap for this attack!");
+    }*/
+    /*
+    if(typeof(result) == "object")) {
+
     }
 
+    if(Array.isArray(target))
+    */
+    if(player[1].stats.actionPoints == 0) {
+        cycleTurn(id,msg);
+    }
+}
+
+function weaponAttack(player, target) {
+    if(checkCosts(player, player.equipment.weapon.stats)) {return false;}
     let newStats;
 
     //todo: crits
     switch (player.equipment.weapon.type) {
         case "standard":
-            newStats = inflictStats(player.equipment.weapon.stats, target, player);
-
-            if(determineHit(newStats)) {
-                return newStats;
-            } else {
-                return "miss";
-            }
+            newStats = inflictStats(player.equipment.weapon.stats, player, target);
+            console.log(newStats);
+            return determineHit(newStats);
 
         default:
             throw Error("Invalid weapon type: " + player.equipment.weapon.type);
     }
 }
 
-function inflictStats(stats,target,player) {
+function skillMagic(id,player,skill,commands) {
+    if(checkCosts(player, player.skills[skill])) {return false;}
+    let target
+    let newStats;
+
+    switch (skill.target) {
+        case "enemy":
+            target = selectTarget(id,player,commands[2],getOpponentSide(battles[id].side));
+            newStats = inflictStats(skill.stats,player,target[1]);
+            return [determineHit(newStats),target[1]];
+    
+        default:
+            break;
+    }
+
+    return false;
+}
+
+function checkCosts(player,path) {
+    if(path["APcost"] != undefined) {
+        if((player.stats.actionPoints - path["APcost"]) < 0) {
+            return true;
+        } 
+    } else if (path["MPcost"] != undefined) {
+        if((player.stats.magic - path["MPcost"]) < 0) {
+            return true;
+        } 
+    }
+}
+
+function inflictStats(stats,player,target) {
+    //these stats get applied to passive stats every turn FIXME nao
     if(stats == undefined) {throw Error("No stats provided!")}
+    if(target == undefined) {target = player}
+
     let damage = 0;
 
     for (const stat in stats) {
@@ -253,24 +309,15 @@ function inflictStats(stats,target,player) {
 
             case "damage":
                 damage = (stats.damage + player.stats.physicalAttack) - (target.stats.defence);
-                if(damage > target.stats.health) {target.down = true;}
                 target.stats.health -= damage;
                 break;
-        }
-    }
 
-    return [player, target, damage];
-}
-
-function applyStats(item,player) {
-    for (const stat in item.stats) {
-        switch (stat) {
             case "armor":
-                player.stats.defence += item.stats.armor;
+                player.stats.defence += stats.armor;
                 break;
 
             case "accuracy":
-                player.stats.hit += item.stats.accuracy;
+                player.stats.hit += stats.accuracy;
                 break;
 
             case "evade":
@@ -280,21 +327,20 @@ function applyStats(item,player) {
                 } else if (Math.sign(player.stats.evade + stats.evade) == -1) {
                     player.stat.evade = 0;
                 }*/
-                player.stats.evade += item.stats.evade;
+                player.stats.evade += stats.evade;
                 break;
         }
     }
-
-    return player;
+    return [player, target, damage];
 }
 
 function determineHit(stats) {
     let hitChance = stats[0].stats.hit - stats[1].stats.evade;
     //console.log("hitchance: " + hitChance)
     if((Math.floor(Math.random() * 100) / 100) < hitChance) {
-        return true;
+        return stats;
     } else {
-        return false;
+        return "miss";
     };
 }
 

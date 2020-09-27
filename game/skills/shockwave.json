@@ -1,0 +1,11 @@
+{
+    "tier":0,
+    "itemName":"Shockwave",
+    "description":"Creates a shockwave that damages the entire enemy team.",
+    "target":"enemyTeam",
+    "stats":{
+        "APcost":10,
+        "MPcost":7,
+        "damage":25
+    }
+}

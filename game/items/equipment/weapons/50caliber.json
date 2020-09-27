@@ -4,8 +4,13 @@
     "description":"what",
     "type":"standard",
     "stats":{
-        "APcost":5,
-        "damage":9999,
-        "accuracy":10
+        "active":{
+            "APcost":5,
+            "damage":9999
+        },
+
+        "passive":{
+            "accuracy":10
+        }
     }
 }
