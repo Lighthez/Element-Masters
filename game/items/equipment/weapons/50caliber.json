@@ -6,10 +6,7 @@
     "stats":{
         "active":{
             "APcost":5,
-            "damage":9999
-        },
-
-        "passive":{
+            "damage":9999,
             "accuracy":10
         }
     }

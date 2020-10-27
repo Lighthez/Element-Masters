@@ -32,6 +32,11 @@ module.exports = {
                          context.msg.channel.send("gone.");
                          break;
                
+                    case "dumpChar":
+                         let account = await context.database.accounts.getAccount(context.msg.author.id);
+                         context.msg.channel.send("```json\n" + JSON.stringify(account.character, null, 4) + "\n```")
+                         break;
+
                     default:
                          break;
                }

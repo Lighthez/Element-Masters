@@ -1,0 +1,15 @@
+{
+    "tier":0,
+    "level":1,
+    "itemName":"Fireball",
+    "description":"Casts a slow-moving large fireball",
+    "target":"enemy",
+    "stats":{
+        "active":{
+            "APcost":10,
+            "MPcost":7,
+            "damage":25,
+            "accuracy":0.1
+        }
+    }
+}

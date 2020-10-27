@@ -4,7 +4,9 @@
     "description":"Peices of leather stiched together haphazardly",
     "slot":"head",
     "stats":{
-        "armor":1,
-        "evade":-0.1
+        "passive":{
+            "armor":1,
+            "evade":-0.1
+        }
     }
 }

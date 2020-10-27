@@ -4,7 +4,9 @@
     "description":"You found it lying on the ground.",
     "type":"standard",
     "stats": {
-        "APcost":2,
-        "damage":5
+        "active":{
+            "APcost":2,
+            "damage":5
+        }
     }
 }

@@ -6,10 +6,8 @@
     "stats":{
         "active":{
             "APcost":5,
-            "damage":20
-        },
-
-        "passive":{
+            "damage":20,
+            "penetration":5,
             "accuracy":0.2
         }
     }
